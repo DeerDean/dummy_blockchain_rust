@@ -1,5 +1,7 @@
 use bincode;
 use serde::{Deserialize, Serialize};
+use crypto::digest::Digest;
+use crypto::sha3::Sha3;
 
 pub fn my_serialize<T: ?Sized>(value: &T) -> Vec<u8>
 where
@@ -17,6 +19,13 @@ where
     deserialized
 }
 
+pub fn get_hash(bytes: &[u8]) -> String {
+    let mut hasher = Sha3::sha3_256();
+    hasher.input(bytes);
+    hasher.result_str()
+}
+
+// For test
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 struct Point {
     x: i32,
@@ -28,7 +37,7 @@ mod tests {
     use super::Point;
     use super::{my_deserialize, my_serialize};
     #[test]
-    fn coders_works() {
+    fn coder_works() {
         let point = Point { x: 1, y: 1 };
         let se = my_serialize(&point);
         let de: Point = my_deserialize(&se);
